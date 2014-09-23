@@ -1,0 +1,8 @@
+._*
+.DS_Store
+.Trashes
+Thumbs.db
+node_modules/
+*.scssc
+_notes
+.sass-cache

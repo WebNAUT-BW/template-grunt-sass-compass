@@ -1,0 +1,191 @@
+// _mixin.scss
+// --------------------------------------------------------------------
+
+
+// ====================================================================
+// 関数名: font-size
+// --------------------------------------------------------------------
+// 概要: フォントサイズ指定（％：IE向け、16pxを基準）
+// 引数: 
+//   $size: サイズ（px）
+// 使用例: @include font-size(20);　※20pxの場合
+// 備考: 
+// ====================================================================
+@mixin font-size($size) {
+	$default-size: 16;
+	font-size: ($size / $default-size) * 100%;
+}
+
+
+// ====================================================================
+// 関数名: font-size-rem
+// --------------------------------------------------------------------
+// 概要: フォントサイズ指定（rem）
+// 引数: 
+//   $size: サイズ（px）
+// 使用例: @include font-size-rem(20);　※20pxの場合
+// 備考: 
+// ====================================================================
+@mixin font-size-rem($size) {
+	font-size: $size + px;
+	font-size: ($size / 10) * 1rem;
+}
+
+
+// ====================================================================
+// 関数名: opacity-rollover
+// --------------------------------------------------------------------
+// 概要: マウスオンすると透明度を変化させる
+// 引数: 
+//   $opacityValue: 透明度、デフォルトで".7"が指定
+// 使用例: @include opacity-rollover(.5);　※透明度50%の場合
+// 備考: 
+// ====================================================================
+@mixin opacity-rollover($opacityValue: .7) {
+	-moz-transition: opacity 0.12s linear;
+	-webkit-transition: opacity 0.12s linear;
+	transition: opacity 0.12s linear;
+	&:hover{
+		@include opacity($opacityValue);
+	}
+}
+
+
+// ====================================================================
+// 関数名: sprite-background
+// --------------------------------------------------------------------
+// 概要: sprite画像指定用
+// 引数: 
+//   $name:        画像名
+//   $sprites-map: $sprites-map0*
+//   $sprites-img: $sprites-img0*
+//   $ratio:       デバイス・ピクセル比（Retina対応の場合:2）
+// 使用例: @include sprite-background(画像名, $sprites-map01, $sprites-img01, 2);
+// 引用元: http://webamb.com/compass/890.html
+// --------------------------------------------------------------------
+// 
+// オプション：sprite画像格納フォルダ指定（$sprites-map0*と$sprites-img0*はセット）
+// $sprites-map01: sprite-map("sprite01/*.png");
+// $sprites-img01: sprite-url($sprites-map01);
+// $sprites-map02: sprite-map("sprite02/*.png");
+// $sprites-img02: sprite-url($sprites-map02);
+// $sprites-map03: sprite-map("sprite03/*.png");
+//$sprites-img03: sprite-url($sprites-map03);
+// 
+// ====================================================================
+@mixin sprite-background($name, $sprites-map, $sprites-img, $ratio:1) {
+	background-image: $sprites-img;
+	background-repeat: no-repeat;
+	$width: image-width(sprite-path($sprites-map));
+	display: block;
+	height: image-height(sprite-file($sprites-map, $name)) / $ratio;
+	width: image-width(sprite-file($sprites-map, $name)) / $ratio;
+	$ypos: round(nth(sprite-position($sprites-map, $name), 2));
+	background-position: 0 ($ypos / $ratio);
+	@include background-size(($width / $ratio) auto);
+}
+
+
+// ====================================================================
+// 関数名: hide-text
+// --------------------------------------------------------------------
+// 概要: テキストを非表示にする
+// 引数: なし
+// 使用例: @include hide-text;
+// 備考: 
+// ====================================================================
+@mixin hide-text {
+	font: 0/0 a;
+	color: transparent;
+	text-shadow: none;
+	background-color: transparent;
+	border: 0;
+}
+
+
+// ====================================================================
+// 関数名: yoko, tate
+// --------------------------------------------------------------------
+// 概要: デバイスの縦横判定
+// 引数: なし
+// 使用例: @include tate { width: 100%; },@include yoko { width: 25%; }
+// 引用元: http://book.scss.jp/code/c5/04.html
+// 備考: 
+// ====================================================================
+@mixin yoko {
+	@media all and (orientation:landscape) {
+		@content;
+	}
+}
+@mixin tate {
+	@media all and (orientation:portrait) {
+		@content;
+	}
+}
+
+
+// ====================================================================
+// 関数名: media
+// --------------------------------------------------------------------
+// 概要: ブレイクポイント毎のメディアクエリ
+// 引数: 
+//   tab:       タブレット幅（[$bp-tab]px以下）
+//   sp:        スマートフォン幅（[$bp-sp]px以下）
+//   iphone:    iPhone幅（[$bp-iphone]px以下）
+//   [整数]+px:  任意の幅（[整数]px以下）
+// 使用例: 
+//   @include media(tab)    { width: auto; margin: 0 10px; }
+//   @include media(sp)     { width: 100%; margin: 0; }
+//   @include media(iphone) { float: none; margin: 0 auto; }
+//   @include media(800px)  { float: none; margin: 0 auto; }
+// 引用元: http://book.scss.jp/code/c5/04.html
+// 備考: 
+// ====================================================================
+@mixin media($media-width) {
+	// ブレイクポイントを設定（固定値）
+	$bp-tab:      960px;
+	$bp-sp:       660px;
+	$bp-iphone:   480px;
+
+	@if $media-width == tab {
+		@media only screen and (max-width: $bp-tab) {
+			@content;
+		}
+	}
+	@else if $media-width == sp {
+		@media only screen and (max-width: $bp-sp) {
+			@content;
+		}
+	}
+	@else if $media-width == iphone {
+		@media only screen and (max-width: $bp-iphone) {
+			@content;
+		}
+	}
+	@else {
+		@media only screen and (max-width: $media-width) {
+			@content;
+		}
+	}
+}
+
+
+// ====================================================================
+// 関数名: parseInt
+// --------------------------------------------------------------------
+// 概要: 単位を外す関数
+// 引数: 
+//   val: PC幅〜タブレット幅（1024px〜768px）
+// 使用例: 
+//   //フォントサイズ指定 (rem)のmixin
+//   @mixin font-size-rem($size) {
+//     font-size: parseInt($size) + px;
+//     font-size: (parseInt($size) / 10) * 1rem;
+//   }
+// 引用元: http://c-brains.jp/blog/wsg/13/05/27-174103.php
+// 備考: 
+// ====================================================================
+
+@function parseInt($val) {
+	@return $val / (1 + $val - $val);
+}
