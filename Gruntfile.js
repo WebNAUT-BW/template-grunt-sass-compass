@@ -137,8 +137,8 @@ module.exports = function(grunt) {
 			'uglify',
 			'copy:css_debug',
 			'copy:js_debug',
-			'watch',
-			'connect'
+			'connect',
+			'watch'
 		]
 	);
 
@@ -151,8 +151,8 @@ module.exports = function(grunt) {
 			'uglify',
 			'copy:css_release',
 			'copy:js_release',
-			'watch',
-			'connect'
+			'connect',
+			'watch'
 		]
 	);
 
